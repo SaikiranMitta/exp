@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+import "scalapb/scalapb.proto";
+
+import "com/iac/soc/backend/api/common/messages/Messages.proto";
+
+package com.iac.soc.backend.api.user.messages;
+
+message CreateRequest {
+    string first_name = 1;
+    string last_name = 2;
+    string email = 3;
+    string role = 4;
+    string status = 5;
+    string username = 6;
+    string password = 7;
+    repeated com.iac.soc.backend.api.common.messages.Organization organizations = 8;
+}
+message UpdateRequest {
+    string first_name = 2;
+    string last_name = 3;
+    string email = 4;
+    string role = 5;
+    string status = 6;
+    string username = 7;
+    repeated com.iac.soc.backend.api.common.messages.Organization organizations = 8;
+    string idp_user_id = 9;
+}
+message PasswordResetRequest{
+    string password = 1;
+}
+message User{
+    int32 id = 1;
+    string first_name = 2;
+    string last_name = 3;
+    string username = 4;
+    string email = 5;
+    string role = 6;
+    string status = 7;
+    string idp_user_id = 8;
+    int32 created_by = 9;
+    string created_on = 10;
+    int32 updated_by = 11;
+    string updated_on = 12;
+    repeated com.iac.soc.backend.api.common.messages.Organization organizations = 13;
+    string org_ids = 14;
+}
+message GetUsersResponse{
+    int32 status_code = 1;
+    string message = 2;
+    int32 size = 3;
+    int32 total_records = 4;
+    repeated User users = 5;
+}

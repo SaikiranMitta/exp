@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+import "scalapb/scalapb.proto";
+
+package com.iac.soc.backend.pipeline.messages;
+
+option (scalapb.options) = {
+    single_file: true
+    flat_package: true
+};
+
+message IngestedLog {
+    string id = 1;
+    int32 ingestorId = 2;
+    string log = 3;
+}
+message IngestedLogs {
+
+    repeated IngestedLog value = 1;
+
+}
+
+message GetNormalizers {}
+
+message GetNormalizersByIngestorIds{
+    string id=1;
+}
+
+message Normalizer {
+    int32 id = 1;
+    string filters = 2;
+    int32 ingestorId = 3;
+    string grok_pattern = 4;
+    string normalizer_type = 5;
+    string mapping = 6;
+    bool isGlobal = 7;
+}
+
+message Normalizers {
+    repeated Normalizer value = 1;
+}
+
+message NormalizersByIngestors {
+    int32 ingestor = 1;
+    repeated Normalizer normalizers = 2;
+}
+
+message NormalizersGroupedByIngestorId {
+    map<int32, Normalizers> normalizers = 1;
+}

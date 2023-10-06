@@ -1,0 +1,4 @@
+---
+creation_rules:
+        #  Encrypt with AWS KMS
+        - kms: 'arn:aws:kms:us-west-2:784058302078:key/225f5575-b106-41b3-8701-dd992decf5b4+arn:aws:iam::784058302078:role/helm_secret'

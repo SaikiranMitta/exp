@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+import "scalapb/scalapb.proto";
+
+import "com/iac/soc/backend/api/common/messages/Messages.proto";
+
+package com.iac.soc.backend.api.organization.messages;
+
+message CreateRequest {
+    string name = 1;
+    string status = 5;
+}
+message UpdateRequest {
+    string name = 1;
+    string status = 2;
+}
+message UpdateRequestValidator {
+    int32 id =1;
+    string name = 2;
+    string status = 3;
+}
+message PasswordResetRequest{
+    string password = 1;
+}
+message Organization{
+    int32 id = 1;
+    string name = 2;
+    string status = 3;
+    int32 created_by = 4;
+    string created_on = 5;
+    int32 updated_by = 6;
+    string updated_on = 7;
+}
+message GetOrganizationsResponse{
+    int32 status_code = 1;
+    string message = 2;
+    int32 size = 3;
+    int32 total_records = 4;
+    repeated Organization organizations= 5;
+}

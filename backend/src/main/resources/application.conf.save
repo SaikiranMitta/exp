@@ -1,0 +1,207 @@
+# The details of the actor 
+system
+actor-system.name = "backend"
+
+# The SMTP settings for the application
+smtp = {
+  #host = "smtp.office365.com"
+  #port = 587
+  #username = "no-reply-soc@iac.com"
+  #password = ${?SMTP_PASSWORD}
+
+  host = "smtp.gmail.com"
+  port = 587
+  username = "noreplysoc02@gmail.com"
+  password = ${?SMTP_PASSWORD}
+
+}
+
+encryption = {
+  key = "jMhKlOuJnM34G6NHkqo9V010GhLAqOpF0BePojHgh1HgNg8^72k"
+  key = ${?ENCRYPTION_KEY}
+}
+
+# The kudu datawarehouse configuration
+kudu = {
+  masters = "172.21.31.65:7051"
+  masters = ${?KUDU_MASTERS}
+  table = "logs"
+}
+
+# Akka configuration for the backend system
+akka {
+
+  # Akka logging configuration
+  loglevel = INFO
+  loggers = ["akka.event.slf4j.Slf4jLogger"]
+
+  # Akka actor configuration
+  actor {
+
+    # Actor provider configuration
+    provider = "akka.cluster.ClusterActorRefProvider"
+
+    # Available serializers and their keys
+    serializers {
+      proto = "akka.remote.serialization.ProtobufSerializer"
+    }
+
+    # Serializations to be applied for specified objects
+    serialization-bindings {
+      "scalapb.GeneratedMessage" = proto
+    }
+
+    # Akka router deployment configuration
+    deployment {
+
+      # Backend pipeline normalization router configuration
+      /backend/pipeline/normalization/router {
+        router = round-robin-pool
+        cluster {
+          enabled = on
+          max-nr-of-instances-per-node = 3
+          allow-local-routees = on
+          use-roles = ["worker"]
+        }
+      }
+
+      # Backend pipeline enrichment router configuration
+      /backend/pipeline/enrichment/router {
+        router = round-robin-pool
+        cluster {
+          enabled = on
+          max-nr-of-instances-per-node = 3
+          allow-local-routees = on
+          use-roles = ["worker"]
+        }
+      }
+
+      # Backend notification router configuration
+      /backend/notification/router {
+        router = round-robin-pool
+        cluster {
+          enabled = on
+          max-nr-of-instances-per-node = 3
+          allow-local-routees = on
+          use-roles = ["worker"]
+        }
+      }
+
+    }
+
+  }
+
+  # Akka remoting configuration
+  remote {
+    enabled-transports = ["akka.remote.netty.tcp"]
+    log-remote-lifecycle-events = off
+    netty.tcp {
+      hostname = "0.0.0.0"
+      hostname = ${?AKKA_CLUSTER_HOST}
+      port = 2551
+      port = ${?AKKA_CLUSTER_PORT}
+    }
+  }
+
+  # Akka cluster configuration
+  cluster {
+    seed-nodes = [
+      "akka.tcp://"${actor-system.name}"@"${akka.remote.netty.tcp.hostname}":"${akka.remote.netty.tcp.port}
+    ]
+    roles = ["seed", "worker"]
+    role {
+      seed.min-nr-of-members = 1
+    }
+    sharding.state-store-mode = ddata
+  }
+
+  # Akka quartz scheduler configuration
+  quartz {
+    threadPool.threadCount = 10
+  }
+
+  http
+    {
+      port = 8084
+      port = ${?PORT}
+    }
+}
+
+# Keycloak configurations
+keycloak {
+
+  config_path = "/keycloak.json"
+  config_path = ${?KEYCLOAK_CONFIG_PATH}
+
+  realm = "iac-soc"
+  auth_server_host = "172.21.31.65:8080"
+  auth_server_host = ${?KEYCLOAK_HOST}
+  auth_server_url = "http://"${keycloak.auth_server_host}"/auth"
+  ssl_required = "external"
+  resource = "iac-soc-frontend"
+  public_client = true
+  confidential_port = 0
+
+  backend_resource = "admin-cli"
+  backend_resource_id = "fc199e14-1820-44c7-8a43-19f59cbdee58"
+  backend_resource_sceret = "a9a7f65c-708e-4051-8aaf-776f39518acf"
+  admin_username = "admin",
+  admin_password = "123456"
+
+
+}
+
+db {
+
+  default
+    {
+      host = "localhost"
+      host = ${?MYSQL_HOST}
+      driver = "com.mysql.jdbc.Driver"
+      database = "iac"
+      database = ${?MYSQL_DATABASE}
+      url = "jdbc:mysql://"${db.default.host}"/"${db.default.database}
+      user = "root"
+      user = ${?MYSQL_USER}
+      password = "root"
+      password = ${?MYSQL_PASSWORD}
+
+      # Connection Pool settings
+      poolInitialSize = 10
+      poolMaxSize = 20
+      poolConnectionTimeoutMillis = 1000
+    }
+  presto
+    {
+      host = "172.21.32.107"
+      host = ${?PRESTO_HOST}
+
+      port = "8080"
+      port = ${?PRESTO_PORT}
+
+      driver = "io.prestosql.jdbc.PrestoDriver"
+      url = "jdbc:presto://"${db.presto.host}":"${db.presto.port}"/kudu/default"
+
+      uri = "http://172.21.32.107:8080"
+      uri = ${?PRESTO_URI}
+
+      catlog = "kudu"
+      catlog = ${?PRESTO_CATLOG}
+
+      user = "soc"
+      user = ${?PRESTO_USER}
+
+      schema = "default"
+      schema = ${?PRESTO_SCHEMA}
+
+      source = ""
+      source = ${?PRESTO_SOURCE}
+
+    }
+
+}
+ast {
+
+ lower-bound-in-days = "-15"
+
+}

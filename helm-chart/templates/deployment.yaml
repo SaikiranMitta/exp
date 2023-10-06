@@ -1,0 +1,254 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "soc-backend-api.fullname" . }}
+  labels:
+{{ include "soc-backend-api.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "soc-backend-api.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "soc-backend-api.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - {{ .Release.Name }}
+              topologyKey: kubernetes.io/hostname
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-type
+                operator: In
+                values:
+                - spot
+                - stateful
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 80
+            preference:
+              matchExpressions:
+              - key: node-type
+                operator: "In"
+                values:
+                - spot
+          - weight: 20
+            preference:
+              matchExpressions:
+              - key: node-type
+                operator: In
+                values:
+                - stateful
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: S3_CAMEL_DELAY
+              value : "25"
+            - name: S3_CAMEL_MAX_MESSAGES_PER_POLL
+              value: "2"
+            - name: S3_CAMEL_CONCURRENT_CONSUMERS
+              value: "50"
+            - name: TRUSTAR_USERNAME
+              value: "d129d4e0-39ef-40c9-8b64-28c8369361df"
+            - name: TRUSTAR_PASSWORD
+              value: "B9bEApQM9p9h7qyHyQAifnx4"
+            - name: BOOTSTARP_SERVERS
+              value: "soc-kafka-0.soc-kafka.default.svc.cluster.local.:9092,soc-kafka-1.soc-kafka.default.svc.cluster.local.:9092,soc-kafka-2.soc-kafka.default.svc.cluster.local.:9092,soc-kafka-3.soc-kafka.default.svc.cluster.local.:9092,soc-kafka-4.soc-kafka.default.svc.cluster.local.:9092,soc-kafka-5.soc-kafka.default.svc.cluster.local.:9092"
+            - name: RAW_LOG_TOPIC
+              value: "raw-logs-4"
+            - name: LOG_TOPIC
+              value: "logs"
+            - name: SMTP_HOST
+              value: "smtp.office365.com"
+              #value: "smtp.office365.com"
+            - name: SMTP_USERNAME
+              value: "socadminalerts@iac.com"
+              #value: "socadminalerts@iac.com"
+            - name: SMTP_FROM_EMAIL
+              value: "socadminalerts@iac.com"
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Release.Name }}"
+                  key: smtp_password
+            - name: KUDU_MASTERS
+              value: "kudu-master-0.kudu-master-headless.default.svc.cluster.local:7051,kudu-master-1.kudu-master-headless.default.svc.cluster.local:7051,kudu-master-2.kudu-master-headless.default.svc.cluster.local:7051"
+            - name: AKKA_CLUSTER_HOST
+              value:  {{ .Values.akkaClusterHost | default "0.0.0.0" }}
+            - name: AKKA_CLUSTER_PORT
+              value: !!str {{ .Values.akkaClusterPort }}
+            - name: PORT
+              value: !!str {{ .Values.httpPort }}
+            - name: KEYCLOAK_HOST
+              value: {{ .Values.keycloakHost | default "https://soc.iac.com/auth" }}
+            - name: MYSQL_HOST
+              value:  {{ .Values.mysqlHost | default "mysql-backend" }}
+            - name: MYSQL_DATABASE
+              value:  {{ .Values.mysqlDatabase | default "iac" }}
+            - name: MYSQL_USER
+              value:  {{ .Values.mysqlUser | default "root" }}
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Release.Name }}"
+                  key: mysql_password
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Release.Name }}"
+                  key: AWS_ACCESS_KEY
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Release.Name }}"
+                  key: AWS_SECRET_KEY
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Release.Name }}"
+                  key: KEYCLOAK_ADMIN_PASSWORD
+            - name: PRESTO_ANALYST_HOST
+              value: haproxy-presto-analyst
+            - name: PRESTO_ANALYST_PORT
+              value: !!str {{ .Values.prestoAnalystPort }}
+            - name: PRESTO_RULES_HOST
+              value: haproxy-presto
+            - name: PRESTO_RULES_PORT
+              value: !!str {{ .Values.prestoPort }}
+            - name: PRESTO_CATLOG
+              value: {{ .Values.prestoCatalog | default "hive" }}
+            - name: PRESTO_USER
+              value: {{ .Values.prestoUser | default "analyst" }}
+            - name: PRESTO_SCHEMA
+              value: {{ .Values.prestoSchema | default "default" }}
+            - name: PRESTO_SOURCE
+              value: "analyst"
+            - name: PRESTO_RULES_USER
+              value: "analyst"
+            - name: PRESTO_RULES_SOURCE
+              value: "rules"
+            - name: PRESTO_ANALYST_USER
+              value: "analyst"
+            - name: PRESTO_ANALYST_SOURCE
+              value: "analyst"
+            - name: ENVIRONMENT
+              value: "production"
+            - name: LUMBERJACK_KEYSTORE_PASSWORD
+              value: "diChiKuchop7YiFr@ruw"
+            - name: LUMBERJACK_EXCLUDE_STRING
+              value: "true"
+            - name: STAGE_1_PARALLELISM
+              value: "10"
+            - name: K8S_SELECTOR
+              value: "app.kubernetes.io/name={{ .Release.Name }}"
+            - name: K8S_MANAGEMENT_PORT
+              value: "management"
+            - name: AKKA_MANAGEMENT_PORT
+              value: !!str {{ .Values.managementPort }}
+            - name: AKKA_MANAGEMENT_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: AKKA_CLUSTER_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: CLIENT_URL
+              value: "https://soc.iac.com"
+            - name: MAX_CONSUMER_INSTANCES_PER_NODE
+              value: "3"
+            - name: MAX_PRODUCER_INSTANCES_PER_NODE
+              value: "10"
+            - name: MAX_LOG_PRODUCER_INSTANCES_PER_NODE
+              value: "10"
+            - name: MAX_STORE_MANAGER_INSTANCES_PER_NODE
+              value: "50"
+            - name: MAX_ENRICHMENT_INSTANCES_PER_NODE
+              value: "10"
+            - name: MAX_NORMALIZATION_INSTANCES_PER_NODE
+              value: "5"
+            - name: NORMALIZATION_INSTANCES
+              value: "5"
+            - name: DISABLE_S3_INGESTION
+              value: "false"
+            - name: RAW_LOG_CONSUMER_GROUP
+              value: "soc-backend-consumer-18"
+            - name: CAMEL_KAFKA_NUMBER_OF_CONSUMERS
+              value: "10"
+            - name: CAMEL_KAFKA_MAX_POLL_RECORDS
+              value: "5"
+            - name: CAMEL_KAFKA_AGGREGATION_GROUP_SIZE
+              value: "5"
+            - name: CAMEL_KAFKA_HEARTBEAT_INTERVAL_MS
+              value: "10000"
+            - name: CAMEL_KAFKA_SESSION_TIMEOUT_MS
+              value: "30000"
+            - name: MINIMIZE_S3_LOAD
+              value: "true"
+            - name: API_DISPATCHER_MIN_PARALLELISM
+              value: "8"
+            - name: API_DISPATCHER_MAX_PARALLELISM
+              value: "24"
+            - name: API_DISPATCHER_PARALLELISM_FACTOR
+              value: "2.0"
+            - name: API_DISPATCHER_THROUGHPUT
+              value: "1"
+            - name: API_DISPATCHER_THREAD_POOL_SIZE
+              value: "40"
+            - name: AST_FIELDS
+              value: "id,message,type,timestamp"
+            - name: DAILYBEAST_AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Release.Name }}"
+                  key: DAILYBEAST_AWS_ACCESS_KEY
+            - name: DAILYBEAST_AWS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Release.Name }}"
+                  key: DAILYBEAST_AWS_SECRET_KEY
+          ports:
+            - name: http
+              containerPort: 8084
+              protocol: TCP
+              #livenessProbe:
+              #httpGet:
+              #path: /
+              # port: http
+              #readinessProbe:
+              #httpGet:
+              #path: /
+              #port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
