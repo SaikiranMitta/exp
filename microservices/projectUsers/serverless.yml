@@ -1,0 +1,87 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+service: service-c
+
+provider:
+  name: aws
+  runtime: python3.8
+  apiGateway:
+    restApiId:
+      "Fn::ImportValue": MyApiGateway-restApiId
+    restApiRootResourceId:
+      "Fn::ImportValue": MyApiGateway-rootResourceId
+    websocketApiId:
+      "Fn::ImportValue": MyApiGateway-websocketApiId
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-python-requirements
+
+frameworkVersion: "3"
+
+package:
+  individually: true
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    dockerFile: ../../Dockerfile
+    fileName: requirements.txt
+
+functions:
+  # account-list:
+  #   handler: handlers/v1/listHandler.listHandler
+  #   events:
+  #     - httpApi:
+  #         path: /api/v1/accounts
+  #         method: get
+
+  project-user-create:
+    handler: handlers/v1/createHandler.createHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/users
+          method: post
+    package:
+      include:
+        - ../models/**
+
+  project-user-list:
+    handler: handlers/v1/listHandler.listHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/users
+          method: get
+    package:
+      include:
+        - ../models/**
+
+  project-user-delete:
+    handler: handlers/v1/deleteHandler.deleteHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/users/{user_id}
+          method: delete
+    package:
+      include:
+        - ../models/**
+
+  project-user-read:
+    handler: handlers/v1/readHandler.readHandler
+    events:
+      - httpApi:
+          path: /projects/{project_id}/users/{user_id}
+          method: get
+    package:
+      include:
+        - ../models/**

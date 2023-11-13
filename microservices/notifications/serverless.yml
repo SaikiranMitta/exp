@@ -1,0 +1,53 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: service-f
+
+provider:
+  name: aws
+  runtime: python3.8
+  apiGateway:
+    restApiId:
+      "Fn::ImportValue": MyApiGateway-restApiId
+    restApiRootResourceId:
+      "Fn::ImportValue": MyApiGateway-rootResourceId
+    websocketApiId:
+      "Fn::ImportValue": MyApiGateway-websocketApiId
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-python-requirements
+
+frameworkVersion: "3"
+
+package:
+  individually: true
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    dockerFile: ../../Dockerfile
+    fileName: requirements.txt
+
+functions:
+
+  notification-create:
+    handler: handlers/v1/createHandler.createHandler
+    events:
+      - httpApi:
+          path: /api/v1/notifications
+          method: post
+          # authorizer:
+          #   name: customAuthorizer
+    package:
+      include:
+        - ../models/**

@@ -1,0 +1,6825 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Resources": {
+    "ServerlessDeploymentBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ServerlessDeploymentBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ServerlessDeploymentBucket"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      }
+                    ]
+                  ]
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": false
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "AuthorizerFuncLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-authorizerFunc"
+      }
+    },
+    "PreSignUpLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-preSignUp"
+      }
+    },
+    "PostSignUpLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-postSignUp"
+      }
+    },
+    "AccountDashlistLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-account-list"
+      }
+    },
+    "AccountDashreadLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-account-read"
+      }
+    },
+    "ResultDashreadLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-result-read"
+      }
+    },
+    "RoleDashlistLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-role-list"
+      }
+    },
+    "RoleDashupdateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-role-update"
+      }
+    },
+    "RoleDashcreateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-role-create"
+      }
+    },
+    "RoleDashdeleteLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-role-delete"
+      }
+    },
+    "RoleDashreadLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-role-read"
+      }
+    },
+    "ProjectDashlistLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-project-list"
+      }
+    },
+    "ProjectDashupdateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-project-update"
+      }
+    },
+    "ProjectDashcreateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-project-create"
+      }
+    },
+    "ProjectDashdeleteLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-project-delete"
+      }
+    },
+    "ProjectDashreadLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-project-read"
+      }
+    },
+    "ProjectDashuserDashreadLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-project-user-read"
+      }
+    },
+    "ProjectDashuserDashlistLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-project-user-list"
+      }
+    },
+    "ProjectDashuserDashcreateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-project-user-create"
+      }
+    },
+    "ProjectDashuserDashdeleteLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-project-user-delete"
+      }
+    },
+    "UserDashroleDashlistLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-user-role-list"
+      }
+    },
+    "UserDashroleDashcreateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-user-role-create"
+      }
+    },
+    "UserDashroleDashdeleteLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-user-role-delete"
+      }
+    },
+    "UserDashroleDashupdateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-user-role-update"
+      }
+    },
+    "UserDashlistLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-user-list"
+      }
+    },
+    "UserDashcreateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-user-create"
+      }
+    },
+    "UserDashupdateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-user-update"
+      }
+    },
+    "UserDashdeleteLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-user-delete"
+      }
+    },
+    "UserDashreadLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-user-read"
+      }
+    },
+    "AssessmentDashcreateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-assessment-create"
+      }
+    },
+    "AssessmentDashtriggerLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-assessment-trigger"
+      }
+    },
+    "AssessmentDashlistLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-assessment-list"
+      }
+    },
+    "ActivityDashlistLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-activity-list"
+      }
+    },
+    "AssessmentDashreadLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-assessment-read"
+      }
+    },
+    "AssessmentDashupdateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-assessment-update"
+      }
+    },
+    "AssessmentDashresponseDashupdateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-assessment-response-update"
+      }
+    },
+    "AssessmentDashareaDashlistLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-assessment-area-list"
+      }
+    },
+    "AssessmentDashsubareaDashlistLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-assessment-subarea-list"
+      }
+    },
+    "AssessmentDashitemDashlistLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-assessment-item-list"
+      }
+    },
+    "RoleDashpolicyDashlistLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-role-policy-list"
+      }
+    },
+    "RoleDashpolicyDashreadLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-role-policy-read"
+      }
+    },
+    "RoleDashpolicyDashupdateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-role-policy-update"
+      }
+    },
+    "RoleDashpolicyDashcreateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-role-policy-create"
+      }
+    },
+    "RoleDashpolicyDashseedLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-role-policy-seed"
+      }
+    },
+    "RoleDashpolicyDashdeleteLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-role-policy-delete"
+      }
+    },
+    "ItemDashassessmentDashgradeDashupdateLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-item-assessment-grade-update"
+      }
+    },
+    "CalculateDashgradeLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-calculate-grade"
+      }
+    },
+    "GradeDashcalculationDashstatusDashreadLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/tenet-dev-grade-calculation-status-read"
+      }
+    },
+    "IamRoleLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "tenet",
+                  "dev",
+                  "lambda"
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:CreateLogGroup"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/tenet-dev*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/tenet-dev*:*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "lambda:InvokeFunction",
+                    "sts:AssumeRole",
+                    "execute-api:Invoke"
+                  ],
+                  "Resource": [
+                    "*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "cognito-idp:ListUsers",
+                    "cognito-idp:AdminAddUserToGroup",
+                    "cognito-idp:AdminListGroupsForUser",
+                    "cognito-idp:AdminCreateUser",
+                    "cognito-idp:AdminUpdateUserAttributes",
+                    "sns:Publish"
+                  ],
+                  "Resource": [
+                    "*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "sqs:ListQueues",
+                    "sqs:SendMessage",
+                    "sqs:GetQueueUrl"
+                  ],
+                  "Resource": [
+                    "*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "SqsGradeCalculation",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "tenet",
+              "dev",
+              {
+                "Ref": "AWS::Region"
+              },
+              "lambdaRole"
+            ]
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "AuthorizerFuncLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/authorization/authorizer.handler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-authorizerFunc",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "AuthorizerFuncLogGroup"
+      ]
+    },
+    "PreSignUpLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/users/handlers/v1/signUpHandler.preSignUpHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-preSignUp",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "PreSignUpLogGroup"
+      ]
+    },
+    "PostSignUpLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/users/handlers/v1/signUpHandler.postSignUpHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-postSignUp",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "PostSignUpLogGroup"
+      ]
+    },
+    "AccountDashlistLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/accounts/handlers/v1/listHandler.listHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-account-list",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "AccountDashlistLogGroup"
+      ]
+    },
+    "AccountDashreadLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/accounts/handlers/v1/readHandler.readHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-account-read",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "AccountDashreadLogGroup"
+      ]
+    },
+    "ResultDashreadLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/results/handlers/v1/readHandler.readHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-result-read",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "ResultDashreadLogGroup"
+      ]
+    },
+    "RoleDashlistLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/roles/handlers/v1/listHandler.listHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-role-list",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RoleDashlistLogGroup"
+      ]
+    },
+    "RoleDashupdateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/roles/handlers/v1/updateHandler.updateHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-role-update",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RoleDashupdateLogGroup"
+      ]
+    },
+    "RoleDashcreateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/roles/handlers/v1/createHandler.createHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-role-create",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RoleDashcreateLogGroup"
+      ]
+    },
+    "RoleDashdeleteLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/roles/handlers/v1/deleteHandler.deleteHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-role-delete",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RoleDashdeleteLogGroup"
+      ]
+    },
+    "RoleDashreadLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/roles/handlers/v1/readHandler.readHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-role-read",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RoleDashreadLogGroup"
+      ]
+    },
+    "ProjectDashlistLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/projects/handlers/v1/listHandler.listHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-project-list",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProjectDashlistLogGroup"
+      ]
+    },
+    "ProjectDashupdateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/projects/handlers/v1/updateHandler.updateHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-project-update",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProjectDashupdateLogGroup"
+      ]
+    },
+    "ProjectDashcreateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/projects/handlers/v1/createHandler.createHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-project-create",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774",
+            "SNS_PROJECT_CREATED_ARN": {
+              "Ref": "projectTriggerTopic"
+            }
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProjectDashcreateLogGroup"
+      ]
+    },
+    "ProjectDashdeleteLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/projects/handlers/v1/deleteHandler.deleteHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-project-delete",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProjectDashdeleteLogGroup"
+      ]
+    },
+    "ProjectDashreadLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/projects/handlers/v1/readHandler.readHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-project-read",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProjectDashreadLogGroup"
+      ]
+    },
+    "ProjectDashuserDashreadLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/projectUsers/handlers/v1/readHandler.readHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-project-user-read",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProjectDashuserDashreadLogGroup"
+      ]
+    },
+    "ProjectDashuserDashlistLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/projectUsers/handlers/v1/listHandler.listHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-project-user-list",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProjectDashuserDashlistLogGroup"
+      ]
+    },
+    "ProjectDashuserDashcreateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/projectUsers/handlers/v1/createHandler.createHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-project-user-create",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProjectDashuserDashcreateLogGroup"
+      ]
+    },
+    "ProjectDashuserDashdeleteLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/projectUsers/handlers/v1/deleteHandler.deleteHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-project-user-delete",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProjectDashuserDashdeleteLogGroup"
+      ]
+    },
+    "UserDashroleDashlistLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/userRoles/handlers/v1/listHandler.listHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-user-role-list",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "UserDashroleDashlistLogGroup"
+      ]
+    },
+    "UserDashroleDashcreateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/userRoles/handlers/v1/createHandler.createHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-user-role-create",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "UserDashroleDashcreateLogGroup"
+      ]
+    },
+    "UserDashroleDashdeleteLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/userRoles/handlers/v1/deleteHandler.deleteHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-user-role-delete",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "UserDashroleDashdeleteLogGroup"
+      ]
+    },
+    "UserDashroleDashupdateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/userRoles/handlers/v1/updateHandler.updateHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-user-role-update",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "UserDashroleDashupdateLogGroup"
+      ]
+    },
+    "UserDashlistLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/users/handlers/v1/listHandler.listHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-user-list",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "UserDashlistLogGroup"
+      ]
+    },
+    "UserDashcreateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/users/handlers/v1/createHandler.createHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-user-create",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "UserDashcreateLogGroup"
+      ]
+    },
+    "UserDashupdateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/users/handlers/v1/updateHandler.updateHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-user-update",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "UserDashupdateLogGroup"
+      ]
+    },
+    "UserDashdeleteLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/users/handlers/v1/deleteHandler.deleteHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-user-delete",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "UserDashdeleteLogGroup"
+      ]
+    },
+    "UserDashreadLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/users/handlers/v1/readHandler.readHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-user-read",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "UserDashreadLogGroup"
+      ]
+    },
+    "AssessmentDashcreateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/assessments/handlers/v1/createHandler.createHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-assessment-create",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "AssessmentDashcreateLogGroup"
+      ]
+    },
+    "AssessmentDashtriggerLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/assessments/handlers/v1/createHandler.triggerAssessment",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-assessment-trigger",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "AssessmentDashtriggerLogGroup"
+      ]
+    },
+    "AssessmentDashlistLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/assessments/handlers/v1/listHandler.listHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-assessment-list",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "AssessmentDashlistLogGroup"
+      ]
+    },
+    "ActivityDashlistLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/activities/handlers/v1/listHandler.listHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-activity-list",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "ActivityDashlistLogGroup"
+      ]
+    },
+    "AssessmentDashreadLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/assessments/handlers/v1/readHandler.readHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-assessment-read",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "AssessmentDashreadLogGroup"
+      ]
+    },
+    "AssessmentDashupdateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/assessments/handlers/v1/updateHandler.updateHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-assessment-update",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774",
+            "SQS_GRADE_CALCULATION_QUEUE_URL": {
+              "Ref": "SqsGradeCalculation"
+            }
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "AssessmentDashupdateLogGroup"
+      ]
+    },
+    "AssessmentDashresponseDashupdateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/assessmentResponses/handlers/v1/updateHandler.updateHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-assessment-response-update",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "AssessmentDashresponseDashupdateLogGroup"
+      ]
+    },
+    "AssessmentDashareaDashlistLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/areas/handlers/v1/listHandler.listHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-assessment-area-list",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "AssessmentDashareaDashlistLogGroup"
+      ]
+    },
+    "AssessmentDashsubareaDashlistLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/subareas/handlers/v1/listHandler.listHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-assessment-subarea-list",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "AssessmentDashsubareaDashlistLogGroup"
+      ]
+    },
+    "AssessmentDashitemDashlistLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/items/handlers/v1/listHandler.listHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-assessment-item-list",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "AssessmentDashitemDashlistLogGroup"
+      ]
+    },
+    "RoleDashpolicyDashlistLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/rolePolicies/handlers/v1/listHandler.listHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-role-policy-list",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RoleDashpolicyDashlistLogGroup"
+      ]
+    },
+    "RoleDashpolicyDashreadLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/rolePolicies/handlers/v1/readHandler.readHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-role-policy-read",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RoleDashpolicyDashreadLogGroup"
+      ]
+    },
+    "RoleDashpolicyDashupdateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/rolePolicies/handlers/v1/updateHandler.updateHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-role-policy-update",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RoleDashpolicyDashupdateLogGroup"
+      ]
+    },
+    "RoleDashpolicyDashcreateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/rolePolicies/handlers/v1/createHandler.createHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-role-policy-create",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RoleDashpolicyDashcreateLogGroup"
+      ]
+    },
+    "RoleDashpolicyDashseedLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/rolePolicies/handlers/v1/createHandler.seedHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-role-policy-seed",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RoleDashpolicyDashseedLogGroup"
+      ]
+    },
+    "RoleDashpolicyDashdeleteLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/rolePolicies/handlers/v1/deleteHandler.deleteHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-role-policy-delete",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RoleDashpolicyDashdeleteLogGroup"
+      ]
+    },
+    "ItemDashassessmentDashgradeDashupdateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/items/handlers/v1/updateHandler.updateHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-item-assessment-grade-update",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "ItemDashassessmentDashgradeDashupdateLogGroup"
+      ]
+    },
+    "CalculateDashgradeLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/assessments/handlers/v1/gradeCalculationHandler.gradeCalculationHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-calculate-grade",
+        "MemorySize": 1024,
+        "Timeout": 900,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "CalculateDashgradeLogGroup"
+      ]
+    },
+    "GradeDashcalculationDashstatusDashreadLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/tenet.zip"
+        },
+        "Handler": "microservices/assessments/handlers/v1/gradeCalculationHandler.readHandler",
+        "Runtime": "python3.8",
+        "FunctionName": "tenet-dev-grade-calculation-status-read",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PG_USER": "postgres",
+            "PG_PASSWORD": "GKrQMtrUyhXujbhICBLx",
+            "PG_HOST": "tenet-dev-tmp.c8dpjcgrncva.us-east-1.rds.amazonaws.com",
+            "PG_PORT": "5432",
+            "PG_DB": "prod_dump",
+            "REGION_NAME": "us-east-1",
+            "USER_POOL_ID": "us-east-1_fmWPYLmOf",
+            "CLIENT_ID": "5cn4c61kd4ufjfcahgmsquoof",
+            "COGNITO_ADMIN_ID": "8aa1329e-b7c5-41a5-acba-5cbb9fe3c774"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "compass-dev-securitygroup-lambda"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet1"
+            },
+            {
+              "Fn::ImportValue": "compass-dev-subnet-privatesubnet2"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "GradeDashcalculationDashstatusDashreadLogGroup"
+      ]
+    },
+    "AssessmentDashtriggerSnsSubscriptionProjectCreated": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "TopicArn": {
+          "Ref": "projectTriggerTopic"
+        },
+        "Protocol": "lambda",
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "AssessmentDashtriggerLambdaFunction",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "AssessmentDashtriggerLambdaPermissionProjectCreatedSNS": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AssessmentDashtriggerLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "sns.amazonaws.com",
+        "SourceArn": {
+          "Ref": "projectTriggerTopic"
+        }
+      }
+    },
+    "PreSignUpCustomCognitoUserPool1": {
+      "Type": "Custom::CognitoUserPool",
+      "Version": 1,
+      "DependsOn": [
+        "PreSignUpLambdaFunction",
+        "CustomDashresourceDashexistingDashcupLambdaFunction"
+      ],
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomDashresourceDashexistingDashcupLambdaFunction",
+            "Arn"
+          ]
+        },
+        "FunctionName": "tenet-dev-preSignUp",
+        "UserPoolName": "compass-dev-iam-userpool",
+        "UserPoolConfigs": [
+          {
+            "Trigger": "PreSignUp"
+          }
+        ]
+      }
+    },
+    "PostSignUpCustomCognitoUserPool1": {
+      "Type": "Custom::CognitoUserPool",
+      "Version": 1,
+      "DependsOn": [
+        "PostSignUpLambdaFunction",
+        "CustomDashresourceDashexistingDashcupLambdaFunction",
+        "PreSignUpCustomCognitoUserPool1"
+      ],
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomDashresourceDashexistingDashcupLambdaFunction",
+            "Arn"
+          ]
+        },
+        "FunctionName": "tenet-dev-postSignUp",
+        "UserPoolName": "compass-dev-iam-userpool",
+        "UserPoolConfigs": [
+          {
+            "Trigger": "PostConfirmation"
+          },
+          {
+            "Trigger": "PreAuthentication"
+          },
+          {
+            "Trigger": "PostAuthentication"
+          },
+          {
+            "Trigger": "VerifyAuthChallengeResponse"
+          }
+        ]
+      }
+    },
+    "IamRoleCustomResourcesLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "dev",
+                  "tenet",
+                  "custom-resources-lambda"
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Resource": "*",
+                  "Action": [
+                    "cognito-idp:ListUserPools",
+                    "cognito-idp:DescribeUserPool",
+                    "cognito-idp:UpdateUserPool"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:lambda:*:*:function:tenet-dev-preSignUp"
+                  },
+                  "Action": [
+                    "lambda:AddPermission",
+                    "lambda:RemovePermission"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:lambda:*:*:function:tenet-dev-postSignUp"
+                  },
+                  "Action": [
+                    "lambda:AddPermission",
+                    "lambda:RemovePermission"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:iam::*:role/*"
+                  },
+                  "Action": [
+                    "iam:PassRole"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "CustomDashresourceDashexistingDashcupLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/tenet/dev/1675781521362-2023-02-07T14:52:01.362Z/custom-resources.zip"
+        },
+        "FunctionName": "tenet-dev-custom-resource-existing-cup",
+        "Handler": "cognito-user-pool/handler.handler",
+        "MemorySize": 1024,
+        "Runtime": "nodejs14.x",
+        "Timeout": 180,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleCustomResourcesLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "IamRoleCustomResourcesLambdaExecution"
+      ]
+    },
+    "CalculateDashgradeEventSourceMappingSQSSqsGradeCalculation": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": [
+        "IamRoleLambdaExecution"
+      ],
+      "Properties": {
+        "BatchSize": 10,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "SqsGradeCalculation",
+            "Arn"
+          ]
+        },
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CalculateDashgradeLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Enabled": true
+      }
+    },
+    "HttpApi": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "dev-tenet",
+        "ProtocolType": "HTTP",
+        "CorsConfiguration": {
+          "AllowHeaders": [
+            "Content-Type",
+            "X-Amz-Date",
+            "Authorization",
+            "X-Api-Key",
+            "X-Amz-Security-Token",
+            "X-Amz-User-Agent",
+            "X-Amzn-Trace-Id"
+          ],
+          "AllowMethods": [
+            "OPTIONS",
+            "GET",
+            "PUT",
+            "POST",
+            "DELETE",
+            "PATCH"
+          ],
+          "AllowOrigins": [
+            "*"
+          ]
+        }
+      }
+    },
+    "HttpApiStage": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true,
+        "DefaultRouteSettings": {
+          "DetailedMetricsEnabled": false
+        }
+      }
+    },
+    "CustomAuthorizerLambdaAuthorizerPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AuthorizerFuncLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiAuthorizerCustomAuthorizer": {
+      "Type": "AWS::ApiGatewayV2::Authorizer",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "Name": "customAuthorizer",
+        "IdentitySource": [
+          "$request.header.Authorization"
+        ],
+        "AuthorizerType": "REQUEST",
+        "EnableSimpleResponses": true,
+        "AuthorizerPayloadFormatVersion": "2.0",
+        "AuthorizerUri": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":lambda:path/2015-03-31/functions/",
+              {
+                "Fn::GetAtt": [
+                  "AuthorizerFuncLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "/invocations"
+            ]
+          ]
+        }
+      }
+    },
+    "AccountDashlistLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AccountDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationAccountDashlist": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "AccountDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1Accounts": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/accounts",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationAccountDashlist"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationAccountDashlist"
+    },
+    "AccountDashreadLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AccountDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationAccountDashread": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "AccountDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1AccountsAccountidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/accounts/{account_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationAccountDashread"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationAccountDashread"
+    },
+    "ResultDashreadLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ResultDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationResultDashread": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ResultDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1ProjectsProjectidVarAssessmentsAssessmentidVarResults": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/projects/{project_id}/assessments/{assessment_id}/results",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationResultDashread"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationResultDashread"
+    },
+    "RoleDashlistLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "RoleDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationRoleDashlist": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "RoleDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1Roles": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/roles",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationRoleDashlist"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationRoleDashlist"
+    },
+    "RoleDashupdateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "RoleDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationRoleDashupdate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "RoleDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePutApiV1RolesRoleidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "PUT /api/v1/roles/{role_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationRoleDashupdate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationRoleDashupdate"
+    },
+    "RoleDashcreateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "RoleDashcreateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationRoleDashcreate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "RoleDashcreateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePostApiV1Roles": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "POST /api/v1/roles",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationRoleDashcreate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationRoleDashcreate"
+    },
+    "RoleDashdeleteLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "RoleDashdeleteLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationRoleDashdelete": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "RoleDashdeleteLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteDeleteApiV1RolesRoleidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "DELETE /api/v1/roles/{role_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationRoleDashdelete"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationRoleDashdelete"
+    },
+    "RoleDashreadLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "RoleDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationRoleDashread": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "RoleDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1RolesRoleidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/roles/{role_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationRoleDashread"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationRoleDashread"
+    },
+    "ProjectDashlistLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProjectDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationProjectDashlist": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ProjectDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1Projects": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/projects",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationProjectDashlist"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationProjectDashlist"
+    },
+    "ProjectDashupdateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProjectDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationProjectDashupdate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ProjectDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePutApiV1ProjectsProjectidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "PUT /api/v1/projects/{project_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationProjectDashupdate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationProjectDashupdate"
+    },
+    "ProjectDashcreateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProjectDashcreateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationProjectDashcreate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ProjectDashcreateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePostApiV1Projects": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "POST /api/v1/projects",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationProjectDashcreate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationProjectDashcreate"
+    },
+    "ProjectDashdeleteLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProjectDashdeleteLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationProjectDashdelete": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ProjectDashdeleteLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteDeleteApiV1ProjectsProjectidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "DELETE /api/v1/projects/{project_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationProjectDashdelete"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationProjectDashdelete"
+    },
+    "ProjectDashreadLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProjectDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationProjectDashread": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ProjectDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1ProjectsProjectidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/projects/{project_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationProjectDashread"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationProjectDashread"
+    },
+    "ProjectDashuserDashreadLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProjectDashuserDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationProjectDashuserDashread": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ProjectDashuserDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1ProjectsProjectidVarUsersUseridVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/projects/{project_id}/users/{user_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationProjectDashuserDashread"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationProjectDashuserDashread"
+    },
+    "ProjectDashuserDashlistLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProjectDashuserDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationProjectDashuserDashlist": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ProjectDashuserDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1ProjectsProjectidVarUsers": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/projects/{project_id}/users",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationProjectDashuserDashlist"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationProjectDashuserDashlist"
+    },
+    "ProjectDashuserDashcreateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProjectDashuserDashcreateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationProjectDashuserDashcreate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ProjectDashuserDashcreateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePostApiV1ProjectsProjectidVarUsers": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "POST /api/v1/projects/{project_id}/users",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationProjectDashuserDashcreate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationProjectDashuserDashcreate"
+    },
+    "ProjectDashuserDashdeleteLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProjectDashuserDashdeleteLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationProjectDashuserDashdelete": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ProjectDashuserDashdeleteLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteDeleteApiV1ProjectsProjectidVarUsersUseridVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "DELETE /api/v1/projects/{project_id}/users/{user_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationProjectDashuserDashdelete"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationProjectDashuserDashdelete"
+    },
+    "UserDashroleDashlistLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "UserDashroleDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationUserDashroleDashlist": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "UserDashroleDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1UsersUseridVarRoles": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/users/{user_id}/roles",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationUserDashroleDashlist"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationUserDashroleDashlist"
+    },
+    "UserDashroleDashcreateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "UserDashroleDashcreateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationUserDashroleDashcreate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "UserDashroleDashcreateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePostApiV1UsersUseridVarRoles": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "POST /api/v1/users/{user_id}/roles",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationUserDashroleDashcreate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationUserDashroleDashcreate"
+    },
+    "UserDashroleDashdeleteLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "UserDashroleDashdeleteLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationUserDashroleDashdelete": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "UserDashroleDashdeleteLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteDeleteApiV1UsersUseridVarRolesRoleidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "DELETE /api/v1/users/{user_id}/roles/{role_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationUserDashroleDashdelete"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationUserDashroleDashdelete"
+    },
+    "UserDashroleDashupdateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "UserDashroleDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationUserDashroleDashupdate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "UserDashroleDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePutApiV1UsersUseridVarRoles": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "PUT /api/v1/users/{user_id}/roles",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationUserDashroleDashupdate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationUserDashroleDashupdate"
+    },
+    "UserDashlistLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "UserDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationUserDashlist": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "UserDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1Users": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/users",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationUserDashlist"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationUserDashlist"
+    },
+    "UserDashcreateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "UserDashcreateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationUserDashcreate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "UserDashcreateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePostApiV1Users": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "POST /api/v1/users",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationUserDashcreate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationUserDashcreate"
+    },
+    "UserDashupdateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "UserDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationUserDashupdate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "UserDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePatchApiV1UsersUseridVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "PATCH /api/v1/users/{user_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationUserDashupdate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationUserDashupdate"
+    },
+    "UserDashdeleteLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "UserDashdeleteLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationUserDashdelete": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "UserDashdeleteLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteDeleteApiV1UsersUseridVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "DELETE /api/v1/users/{user_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationUserDashdelete"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationUserDashdelete"
+    },
+    "UserDashreadLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "UserDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationUserDashread": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "UserDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1UsersUseridVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/users/{user_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationUserDashread"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationUserDashread"
+    },
+    "AssessmentDashcreateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AssessmentDashcreateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationAssessmentDashcreate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "AssessmentDashcreateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePostApiV1ProjectsProjectidVarAssessments": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "POST /api/v1/projects/{project_id}/assessments",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationAssessmentDashcreate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationAssessmentDashcreate"
+    },
+    "AssessmentDashlistLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AssessmentDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationAssessmentDashlist": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "AssessmentDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1ProjectsProjectidVarAssessments": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/projects/{project_id}/assessments",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationAssessmentDashlist"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationAssessmentDashlist"
+    },
+    "ActivityDashlistLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ActivityDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationActivityDashlist": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ActivityDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1ProjectsProjectidVarAssessmentsAssessmentidVarAreasAreaidVarSubareasSubareaidVarItemsItemidVarActivities": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/projects/{project_id}/assessments/{assessment_id}/areas/{area_id}/subareas/{subarea_id}/items/{item_id}/activities",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationActivityDashlist"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationActivityDashlist"
+    },
+    "AssessmentDashreadLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AssessmentDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationAssessmentDashread": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "AssessmentDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1ProjectsProjectidVarAssessmentsAssessmentidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/projects/{project_id}/assessments/{assessment_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationAssessmentDashread"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationAssessmentDashread"
+    },
+    "AssessmentDashupdateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AssessmentDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationAssessmentDashupdate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "AssessmentDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePatchApiV1ProjectsProjectidVarAssessmentsAssessmentidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "PATCH /api/v1/projects/{project_id}/assessments/{assessment_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationAssessmentDashupdate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationAssessmentDashupdate"
+    },
+    "AssessmentDashresponseDashupdateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AssessmentDashresponseDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationAssessmentDashresponseDashupdate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "AssessmentDashresponseDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePatchApiV1ProjectsProjectidVarAssessmentsAssessmentidVarBulkResponses": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "PATCH /api/v1/projects/{project_id}/assessments/{assessment_id}/bulk/responses",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationAssessmentDashresponseDashupdate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationAssessmentDashresponseDashupdate"
+    },
+    "AssessmentDashareaDashlistLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AssessmentDashareaDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationAssessmentDashareaDashlist": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "AssessmentDashareaDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1ProjectsProjectidVarAssessmentsAssessmentidVarAreas": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/projects/{project_id}/assessments/{assessment_id}/areas",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationAssessmentDashareaDashlist"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationAssessmentDashareaDashlist"
+    },
+    "AssessmentDashsubareaDashlistLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AssessmentDashsubareaDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationAssessmentDashsubareaDashlist": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "AssessmentDashsubareaDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1ProjectsProjectidVarAssessmentsAssessmentidVarAreasAreaidVarSubareas": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/projects/{project_id}/assessments/{assessment_id}/areas/{area_id}/subareas",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationAssessmentDashsubareaDashlist"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationAssessmentDashsubareaDashlist"
+    },
+    "AssessmentDashitemDashlistLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AssessmentDashitemDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationAssessmentDashitemDashlist": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "AssessmentDashitemDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1ProjectsProjectidVarAssessmentsAssessmentidVarAreasAreaidVarSubareasSubareaidVarItems": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/projects/{project_id}/assessments/{assessment_id}/areas/{area_id}/subareas/{subarea_id}/items",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationAssessmentDashitemDashlist"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationAssessmentDashitemDashlist"
+    },
+    "RoleDashpolicyDashlistLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "RoleDashpolicyDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationRoleDashpolicyDashlist": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "RoleDashpolicyDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1RolesRoleidVarPolicies": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/roles/{role_id}/policies",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationRoleDashpolicyDashlist"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationRoleDashpolicyDashlist"
+    },
+    "RoleDashpolicyDashreadLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "RoleDashpolicyDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationRoleDashpolicyDashread": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "RoleDashpolicyDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1RolesRoleidVarPoliciesPolicyidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/roles/{role_id}/policies/{policy_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationRoleDashpolicyDashread"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationRoleDashpolicyDashread"
+    },
+    "RoleDashpolicyDashupdateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "RoleDashpolicyDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationRoleDashpolicyDashupdate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "RoleDashpolicyDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePutApiV1RolesRoleidVarPoliciesPolicyidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "PUT /api/v1/roles/{role_id}/policies/{policy_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationRoleDashpolicyDashupdate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationRoleDashpolicyDashupdate"
+    },
+    "RoleDashpolicyDashcreateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "RoleDashpolicyDashcreateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationRoleDashpolicyDashcreate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "RoleDashpolicyDashcreateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePostApiV1RolesRoleidVarPolicies": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "POST /api/v1/roles/{role_id}/policies",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationRoleDashpolicyDashcreate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationRoleDashpolicyDashcreate"
+    },
+    "RoleDashpolicyDashdeleteLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "RoleDashpolicyDashdeleteLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationRoleDashpolicyDashdelete": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "RoleDashpolicyDashdeleteLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteDeleteApiV1RolesRoleidVarPoliciesPolicyidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "DELETE /api/v1/roles/{role_id}/policies/{policy_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationRoleDashpolicyDashdelete"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationRoleDashpolicyDashdelete"
+    },
+    "ItemDashassessmentDashgradeDashupdateLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ItemDashassessmentDashgradeDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationItemDashassessmentDashgradeDashupdate": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ItemDashassessmentDashgradeDashupdateLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRoutePatchApiV1ProjectsProjectidVarAssessmentsAssessmentidVarAreasAreaidVarSubareasSubareaidVarItemsItemidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "PATCH /api/v1/projects/{project_id}/assessments/{assessment_id}/areas/{area_id}/subareas/{subarea_id}/items/{item_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationItemDashassessmentDashgradeDashupdate"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationItemDashassessmentDashgradeDashupdate"
+    },
+    "GradeDashcalculationDashstatusDashreadLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GradeDashcalculationDashstatusDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationGradeDashcalculationDashstatusDashread": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "GradeDashcalculationDashstatusDashreadLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetApiV1AssessmentsGradecalculationstatusGradecalculationtaskidVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /api/v1/assessments/grade_calculation_status/{grade_calculation_task_id}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationGradeDashcalculationDashstatusDashread"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerCustomAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationGradeDashcalculationDashstatusDashread"
+    },
+    "assumedRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Principal": {
+                "Service": [
+                  "apigateway.amazonaws.com",
+                  "lambda.amazonaws.com"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "projectTriggerTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": "ProjectCreated"
+      }
+    },
+    "DeadGradeCalculcation": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "compass-dev-sqs-deadletter-grade-calculation",
+        "Tags": [
+          {
+            "Key": "product-name",
+            "Value": "tenet"
+          },
+          {
+            "Key": "environment-name",
+            "Value": "dev"
+          },
+          {
+            "Key": "stack-name",
+            "Value": "tenet-dev-cloudformation-microservicestack"
+          }
+        ]
+      }
+    },
+    "SqsGradeCalculation": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "compass-dev-sqs-grade-calculation",
+        "VisibilityTimeout": 900,
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "DeadGradeCalculcation",
+              "Arn"
+            ]
+          },
+          "maxReceiveCount": 2
+        },
+        "Tags": [
+          {
+            "Key": "product-name",
+            "Value": "tenet"
+          },
+          {
+            "Key": "environment-name",
+            "Value": "dev"
+          },
+          {
+            "Key": "stack-name",
+            "Value": "tenet-dev-cloudformation-microservicestack"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ServerlessDeploymentBucketName": {
+      "Value": {
+        "Ref": "ServerlessDeploymentBucket"
+      },
+      "Export": {
+        "Name": "sls-tenet-dev-ServerlessDeploymentBucketName"
+      }
+    },
+    "HttpApiId": {
+      "Description": "Id of the HTTP API",
+      "Value": {
+        "Ref": "HttpApi"
+      },
+      "Export": {
+        "Name": "sls-tenet-dev-HttpApiId"
+      }
+    },
+    "HttpApiUrl": {
+      "Description": "URL of the HTTP API",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "HttpApi"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            }
+          ]
+        ]
+      },
+      "Export": {
+        "Name": "sls-tenet-dev-HttpApiUrl"
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+"pathParameters": { "assessment_id": "5efdaa9a-6b6f-4b64-936a-10d01d6ee8f4", 
+    "project_id": "17b299a6-9421-4821-8da2-78f081a8a33d", 
+    "area_id": "01b81b66-59d9-4b71-ae5b-0c3c5206749a",
+     "subarea_id": "0697a371-a1b3-4396-a65e-2b34729bcfaa",
+     "item_id": "2886c75f-a1aa-42d6-95b8-5fd663870c45"
+    },
+    "body" :  { "grade" : "A" } 
+
+
+
+}

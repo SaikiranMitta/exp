@@ -1,0 +1,851 @@
+service: tenet
+frameworkVersion: "3"
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+  - serverless-python-requirements
+
+custom: ${file(./serverless.common.yml):custom}
+
+package:
+  individually: false
+  patterns:
+    - "!node_modules/**"
+    - "!venv/**"
+    - "!env/**"
+    - "!.vscode/**"
+
+provider:
+  name: aws
+  runtime: python3.8
+  deploymentMethod: direct
+  stackName: ${self:service}-${self:custom.stage}-cloudformation-microservicestack
+  versionFunctions: false # https://stackoverflow.com/questions/46043872/serverless-deployment-error-code-storage-limit-exceeded
+  httpApi:
+    cors: true
+    authorizers:
+      customAuthorizer:
+        type: request
+        functionName: authorizerFunc
+        enableSimpleResponses: true
+        identitySource:
+          - $request.header.Authorization
+
+  iamRoleStatements:
+    - Effect: "Allow" # xray permissions (required)
+      Action:
+        - "lambda:InvokeFunction"
+        - "sts:AssumeRole"
+        - "execute-api:Invoke"
+      Resource:
+        - "*"
+    - Effect: "Allow"
+      Action:
+        - "cognito-idp:ListUsers"
+        - "cognito-idp:AdminAddUserToGroup"
+        - "cognito-idp:AdminListGroupsForUser"
+        - "cognito-idp:AdminCreateUser"
+        - "cognito-idp:AdminUpdateUserAttributes"
+        - "sns:Publish"
+      Resource:
+        - "*"
+    - Effect: "Allow"
+      Action:
+        - "sqs:ListQueues"
+        - "sqs:SendMessage"
+        - "sqs:GetQueueUrl"
+      Resource:
+        - "*"
+    - Effect: "Allow"
+      Action:
+        - "ses:SendEmail"
+      Resource:
+        - "*"
+  vpc:
+    securityGroupIds:
+      - "Fn::ImportValue": "${self:custom.networkStack}-${self:custom.stage}-securitygroup-lambda"
+    subnetIds:
+      - "Fn::ImportValue": "${self:custom.networkStack}-${self:custom.stage}-subnet-privatesubnet1"
+      - "Fn::ImportValue": "${self:custom.networkStack}-${self:custom.stage}-subnet-privatesubnet2"
+
+resources:
+  Resources:
+    assumedRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - "sts:AssumeRole"
+              Principal:
+                Service:
+                  - "apigateway.amazonaws.com"
+                  - "lambda.amazonaws.com"
+    projectTriggerTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:service}-${self:custom.stage}-ProjectCreated
+    projectUserCreatedTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:service}-${self:custom.stage}-project-user-created
+    assessmentCreatedTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:custom.service}-${self:custom.stage}-assessment-created
+    assessmentUpdatedTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:custom.service}-${self:custom.stage}-assessment-updated
+    DeadGradeCalculcation:
+      Type: AWS::SQS::Queue
+      Properties:
+        # QueueName: ${self:service}-${self:custom.stage}-sqs-deadletter-grade-calculation.fifo
+        QueueName: ${self:service}-${self:custom.stage}-sqs-deadletter-grade-calculation
+        # FifoQueue: True
+        Tags:
+          - Key: product-name
+            Value: tenet
+          - Key: environment-name
+            Value: ${self:custom.stage}
+          - Key: stack-name
+            Value: ${self:service}-${self:custom.stage}-cloudformation-microservicestack
+    SqsGradeCalculation:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:service}-${self:custom.stage}-sqs-grade-calculation
+        VisibilityTimeout: 900
+        # FifoQueue: True
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+              - DeadGradeCalculcation
+              - Arn
+          maxReceiveCount: 2
+        Tags:
+          - Key: product-name
+            Value: tenet
+          - Key: environment-name
+            Value: ${self:custom.stage}
+          - Key: stack-name
+            Value: ${self:service}-${self:custom.stage}-cloudformation-microservicestack
+
+    sqsEmail:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.service}-${self:custom.stage}-email
+        VisibilityTimeout: 900
+        # FifoQueue: True
+        Tags:
+          - Key: product-name
+            Value: tenet
+          - Key: environment-name
+            Value: ${self:custom.stage}
+          - Key: stack-name
+            Value: tenet-${self:custom.stage}-cloudformation-microservicestack
+
+functions:
+  authorizerFunc:
+    handler: microservices/authorization/authorizer.handler
+
+  # user-role service
+  # create-user-role | can be invokved by admin only
+
+  preSignUp:
+    handler: microservices/users/handlers/v1/signUpHandler.preSignUpHandler
+    events:
+      - cognitoUserPool:
+          pool: "${self:service}-${self:custom.stage}-iam-userpool"
+          trigger: PreSignUp
+          existing: true
+
+  postSignUp:
+    handler: microservices/users/handlers/v1/signUpHandler.postSignUpHandler
+    events:
+      - cognitoUserPool:
+          pool: "${self:service}-${self:custom.stage}-iam-userpool"
+          trigger: PostConfirmation
+          existing: true
+      - cognitoUserPool:
+          pool: "${self:service}-${self:custom.stage}-iam-userpool"
+          trigger: PreAuthentication # use this one
+          existing: true
+      - cognitoUserPool:
+          pool: "${self:service}-${self:custom.stage}-iam-userpool"
+          trigger: PostAuthentication
+          existing: true
+      - cognitoUserPool:
+          pool: "${self:service}-${self:custom.stage}-iam-userpool"
+          trigger: VerifyAuthChallengeResponse
+          existing: true
+
+  account-list:
+    handler: microservices/accounts/handlers/v1/listHandler.listHandler
+    events:
+      - httpApi:
+          path: /api/v1/accounts
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  account-read:
+    handler: microservices/accounts/handlers/v1/readHandler.readHandler
+    events:
+      - httpApi:
+          path: /api/v1/accounts/{account_id}
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  account-create:
+    handler: microservices/accounts/handlers/v1/createHandler.createHandler
+    events:
+      - httpApi:
+          path: /api/v1/accounts
+          method: post
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  account-update:
+    handler: microservices/accounts/handlers/v1/updateHandler.updateHandler
+    events:
+      - httpApi:
+          path: /api/v1/accounts/{account_id}
+          method: put
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  result-read:
+    handler: microservices/results/handlers/v1/readHandler.readHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/assessments/{assessment_id}/results
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  role-list:
+    handler: microservices/roles/handlers/v1/listHandler.listHandler
+    events:
+      - httpApi:
+          method: get
+          path: /api/v1/roles
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  role-update:
+    handler: microservices/roles/handlers/v1/updateHandler.updateHandler
+    events:
+      - httpApi:
+          path: /api/v1/roles/{role_id}
+          method: put
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  role-create:
+    handler: microservices/roles/handlers/v1/createHandler.createHandler
+    events:
+      - httpApi:
+          path: /api/v1/roles
+          method: post
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  role-delete:
+    handler: microservices/roles/handlers/v1/deleteHandler.deleteHandler
+    events:
+      - httpApi:
+          path: /api/v1/roles/{role_id}
+          method: delete
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  role-read:
+    handler: microservices/roles/handlers/v1/readHandler.readHandler
+    events:
+      - httpApi:
+          path: /api/v1/roles/{role_id}
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  project-list:
+    handler: microservices/projects/handlers/v1/listHandler.listHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  project-update:
+    handler: microservices/projects/handlers/v1/updateHandler.updateHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}
+          method: put
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  project-create:
+    handler: microservices/projects/handlers/v1/createHandler.createHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects
+          method: post
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+    environment:
+      SNS_PROJECT_CREATED_ARN:
+        Ref: projectTriggerTopic
+
+  project-delete:
+    handler: microservices/projects/handlers/v1/deleteHandler.deleteHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}
+          method: delete
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  project-read:
+    handler: microservices/projects/handlers/v1/readHandler.readHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  project-user-read:
+    handler: microservices/projectUsers/handlers/v1/readHandler.readHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/users/{user_id}
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  project-user-list:
+    handler: microservices/projectUsers/handlers/v1/listHandler.listHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/users
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  project-user-create:
+    handler: microservices/projectUsers/handlers/v1/createHandler.createHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/users
+          method: post
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+    environment:
+      SNS_PROJECT_USER_CREATED_ARN:
+        Ref: projectUserCreatedTopic
+
+  project-user-delete:
+    handler: microservices/projectUsers/handlers/v1/deleteHandler.deleteHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/users/{user_id}
+          method: delete
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  user-role-list:
+    handler: microservices/userRoles/handlers/v1/listHandler.listHandler
+    events:
+      - httpApi:
+          path: /api/v1/users/{user_id}/roles
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  user-role-create:
+    handler: microservices/userRoles/handlers/v1/createHandler.createHandler
+    events:
+      - httpApi:
+          path: /api/v1/users/{user_id}/roles
+          method: post
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  user-role-delete:
+    handler: microservices/userRoles/handlers/v1/deleteHandler.deleteHandler
+    events:
+      - httpApi:
+          path: /api/v1/users/{user_id}/roles/{role_id}
+          method: delete
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  user-role-update:
+    handler: microservices/userRoles/handlers/v1/updateHandler.updateHandler
+    events:
+      - httpApi:
+          path: /api/v1/users/{user_id}/roles
+          method: put
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  user-list:
+    handler: microservices/users/handlers/v1/listHandler.listHandler
+    events:
+      - httpApi:
+          path: /api/v1/users
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  user-create:
+    handler: microservices/users/handlers/v1/createHandler.createHandler
+    events:
+      - httpApi:
+          path: /api/v1/users
+          method: post
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  user-update:
+    handler: microservices/users/handlers/v1/updateHandler.updateHandler
+    events:
+      - httpApi:
+          path: /api/v1/users/{user_id}
+          method: patch
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  user-delete:
+    handler: microservices/users/handlers/v1/deleteHandler.deleteHandler
+    events:
+      - httpApi:
+          path: /api/v1/users/{user_id}
+          method: delete
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  user-read:
+    handler: microservices/users/handlers/v1/readHandler.readHandler
+    events:
+      - httpApi:
+          path: /api/v1/users/{user_id}
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+  user-project-list:
+    handler: microservices/users/handlers/v1/projectListHandler.listHandler
+    events:
+      - httpApi:
+          path: /api/v1/users/{user_id}/projects
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  assessment-create:
+    handler: microservices/assessments/handlers/v1/createHandler.createHandler
+    timeout: 900
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/assessments
+          method: post
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+    environment:
+      SNS_ASSESSMENT_CREATED_ARN:
+        Ref: assessmentCreatedTopic
+
+  assessment-trigger:
+    handler: microservices/assessments/handlers/v1/createHandler.triggerAssessment
+    timeout: 900
+    events:
+      - sns:
+          arn: !Ref projectTriggerTopic
+          topicName: ProjectCreated
+    package:
+      include:
+        - models/**
+    environment:
+      SNS_ASSESSMENT_CREATED_ARN:
+        Ref: assessmentCreatedTopic
+
+  assessment-list:
+    handler: microservices/assessments/handlers/v1/listHandler.listHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/assessments
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  activity-list:
+    handler: microservices/activities/handlers/v1/listHandler.listHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/assessments/{assessment_id}/areas/{area_id}/subareas/{subarea_id}/items/{item_id}/activities
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  assessment-read:
+    handler: microservices/assessments/handlers/v1/readHandler.readHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/assessments/{assessment_id}
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  assessment-update:
+    handler: microservices/assessments/handlers/v1/updateHandler.updateHandler
+    # timeout: 120 # optional, in seconds, default is 6
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/assessments/{assessment_id}
+          method: patch
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+    environment:
+      SQS_GRADE_CALCULATION_QUEUE_URL:
+        Ref: SqsGradeCalculation
+      SNS_ASSESSMENT_UPDATED_ARN:
+        Ref: assessmentUpdatedTopic
+
+  assessment-response-update:
+    handler: microservices/assessmentResponses/handlers/v1/updateHandler.updateHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/assessments/{assessment_id}/bulk/responses
+          method: patch
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  assessment-area-list:
+    handler: microservices/areas/handlers/v1/listHandler.listHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/assessments/{assessment_id}/areas
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  assessment-subarea-list:
+    handler: microservices/subareas/handlers/v1/listHandler.listHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/assessments/{assessment_id}/areas/{area_id}/subareas
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  assessment-item-list:
+    handler: microservices/items/handlers/v1/listHandler.listHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/assessments/{assessment_id}/areas/{area_id}/subareas/{subarea_id}/items
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  role-policy-list:
+    handler: microservices/rolePolicies/handlers/v1/listHandler.listHandler
+    events:
+      - httpApi:
+          path: /api/v1/roles/{role_id}/policies
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  role-policy-read:
+    handler: microservices/rolePolicies/handlers/v1/readHandler.readHandler
+    events:
+      - httpApi:
+          path: /api/v1/roles/{role_id}/policies/{policy_id}
+          authorizer:
+            name: customAuthorizer
+          method: get
+    package:
+      include:
+        - models/**
+
+  role-policy-update:
+    handler: microservices/rolePolicies/handlers/v1/updateHandler.updateHandler
+    events:
+      - httpApi:
+          path: /api/v1/roles/{role_id}/policies/{policy_id}
+          authorizer:
+            name: customAuthorizer
+          method: put
+    package:
+      include:
+        - models/**
+
+  role-policy-create:
+    handler: microservices/rolePolicies/handlers/v1/createHandler.createHandler
+    events:
+      - httpApi:
+          path: /api/v1/roles/{role_id}/policies
+          authorizer:
+            name: customAuthorizer
+          method: post
+    package:
+      include:
+        - models/**
+
+  role-policy-seed:
+    handler: microservices/rolePolicies/handlers/v1/createHandler.seedHandler
+    package:
+      include:
+        - models/**
+
+  role-policy-delete:
+    handler: microservices/rolePolicies/handlers/v1/deleteHandler.deleteHandler
+    events:
+      - httpApi:
+          path: /api/v1/roles/{role_id}/policies/{policy_id}
+          authorizer:
+            name: customAuthorizer
+          method: delete
+    package:
+      include:
+        - models/**
+
+  item-assessment-grade-update:
+    handler: microservices/items/handlers/v1/updateHandler.updateHandler
+    events:
+      - httpApi:
+          path: /api/v1/projects/{project_id}/assessments/{assessment_id}/areas/{area_id}/subareas/{subarea_id}/items/{item_id}
+          method: patch
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  calculate-grade:
+    handler: microservices/assessments/handlers/v1/gradeCalculationHandler.gradeCalculationHandler
+    timeout: 900
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - SqsGradeCalculation
+              - Arn
+    package:
+      include:
+        - models/**
+
+  grade-calculation-status-read:
+    handler: microservices/assessments/handlers/v1/gradeCalculationHandler.readHandler
+    events:
+      - httpApi:
+          path: /api/v1/assessments/grade_calculation_status/{grade_calculation_task_id}
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  notification-create:
+    handler: microservices/notifications/handlers/v1/createHandler.createHandler
+    events:
+      - sns:
+          arn: !Ref assessmentCreatedTopic
+          topicName: assessment-created
+      - sns:
+          arn: !Ref projectUserCreatedTopic
+          topicName: project-user-created
+      - sns:
+          arn: !Ref assessmentUpdatedTopic
+          topicName: assessment-updated
+    package:
+      include:
+        - models/**
+    environment:
+      EMAIL_QUEUE_URL:
+        Ref: sqsEmail
+
+  send-notification-mail:
+    handler: microservices/email/handlers/v1/createHandler.createHandler
+    timeout: 900
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - sqsEmail # sqs queue name
+              - Arn
+    package:
+      include:
+        - models/**
+
+  domain-list:
+    handler: microservices/domains/handlers/v1/listHandler.listHandler
+    events:
+      - httpApi:
+          path: /api/v1/domains
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  domain-read:
+    handler: microservices/domains/handlers/v1/readHandler.readHandler
+    events:
+      - httpApi:
+          path: /api/v1/domains/{domain_id}
+          method: get
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  domain-create:
+    handler: microservices/domains/handlers/v1/createHandler.createHandler
+    events:
+      - httpApi:
+          path: /api/v1/domains
+          method: post
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**
+
+  domain-update:
+    handler: microservices/domains/handlers/v1/updateHandler.updateHandler
+    events:
+      - httpApi:
+          path: /api/v1/domains/{domain_id}
+          method: put
+          authorizer:
+            name: customAuthorizer
+    package:
+      include:
+        - models/**

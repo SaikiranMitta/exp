@@ -1,0 +1,22 @@
+custom:
+  service: tenet
+  networkStack: compass
+  stage: "${opt:stage, 'dev'}"
+  region: "${opt:region, 'us-east-1'}"
+  pythonRequirements:
+    dockerizePip: true
+    dockerFile: Dockerfile
+    fileName: requirements.txt
+    useStaticCache: true
+    useDownloadCache: true
+    slim: true
+    noDeploy:
+      - boto3
+      - botocore
+      - docutils
+      - jmespath
+      - pip
+      - python-dateutil
+      - s3transfer
+      - setuptools
+      - six

@@ -1,0 +1,202 @@
+[
+  {
+    "Resource": "Project",
+    "Action": "Read",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "Project",
+    "Action": "Write",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "Project",
+    "Action": "Read",
+    "Role": "Product Owner"
+  },
+  {
+    "Resource": "ProjectUser",
+    "Action": "Create",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "ProjectUser",
+    "Action": "Read",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "ProjectUser",
+    "Action": "Write",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "ProjectUser",
+    "Action": "Read",
+    "Role": "Product Owner"
+  },
+  {
+    "Resource": "Assessment",
+    "Action": "Read",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "Assessment",
+    "Action": "Read",
+    "Role": "Product Owner"
+  },
+  {
+    "Resource": "Assessment",
+    "Action": "Read",
+    "Role": "Reviewer"
+  },
+  {
+    "Resource": "Assessment",
+    "Action": "Write",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "Assessment",
+    "Action": "Write",
+    "Role": "Reviewer"
+  },
+  {
+    "Resource": "Account",
+    "Action": "Read",
+    "Role": "Product Owner"
+  },
+  {
+    "Resource": "Account",
+    "Action": "Read",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "Account",
+    "Action": "Read",
+    "Role": "Reviewer"
+  },
+  {
+    "Resource": "AssessmentResponse",
+    "Action": "Write",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "AssessmentResponse",
+    "Action": "Write",
+    "Role": "Product Owner"
+  },
+  {
+    "Resource": "AssessmentResponse",
+    "Action": "Write",
+    "Role": "Reviewer"
+  },
+  {
+    "Resource": "Project",
+    "Action": "Read",
+    "Role": "Reviewer"
+  },
+  {
+    "Resource": "User",
+    "Action": "Read",
+    "Role": "Product Owner"
+  },
+  {
+    "Resource": "User",
+    "Action": "Read",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "User",
+    "Action": "Read",
+    "Role": "Reviewer"
+  },
+  {
+    "Resource": "AssessmentResponse",
+    "Action": "Read",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "AssessmentResponse",
+    "Action": "Read",
+    "Role": "Product Owner"
+  },
+  {
+    "Resource": "AssessmentResponse",
+    "Action": "Read",
+    "Role": "Reviewer"
+  },
+  {
+    "Resource": "Area",
+    "Action": "Read",
+    "Role": "Reviewer"
+  },
+  {
+    "Resource": "Area",
+    "Action": "Read",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "Subarea",
+    "Action": "Read",
+    "Role": "Reviewer"
+  },
+  {
+    "Resource": "Subarea",
+    "Action": "Read",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "Item",
+    "Action": "Write",
+    "Role": "Reviewer"
+  },
+  {
+    "Resource": "Item",
+    "Action": "Read",
+    "Role": "Reviewer"
+  },
+  {
+    "Resource": "Item",
+    "Action": "Read",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "Activity",
+    "Action": "Read",
+    "Role": "Reviewer"
+  },
+  {
+    "Resource": "Activity",
+    "Action": "Read",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "Role",
+    "Action": "Read",
+    "Role": "Reviewer"
+  },
+  {
+    "Resource": "Role",
+    "Action": "Read",
+    "Role": "Product Owner"
+  },
+  {
+    "Resource": "Role",
+    "Action": "Read",
+    "Role": "Project Manager"
+  },
+  {
+    "Resource": "Domain",
+    "Action": "Read",
+    "Role": "Reviewer"
+  },
+  {
+    "Resource": "Domain",
+    "Action": "Read",
+    "Role": "Product Owner"
+  },
+  {
+    "Resource": "Domain",
+    "Action": "Read",
+    "Role": "Project Manager"
+  }
+]
